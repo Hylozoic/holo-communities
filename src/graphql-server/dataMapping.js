@@ -18,23 +18,23 @@ export const toInterfaceKeyMap = {
     'avatarUrl': 'avatar_url',
     'createdAt': 'timestamp',
     'creator': 'author_pub_key',
+    'id': 'action_hash',
     'lastReadTime': 'last_read_time',
     'messageThreadId': 'thread_action_hash',
     'participantIds': 'participant_action_hashes'
   },
   post: {
-    'postToGroupIds': 'to_base_action_hashes',
-    'id': 'action_hash',
+    'postToGroupIds': 'base_action_hashes',
     'type': 'post_type'
   },
   person: {
     'id': 'agent_pub_key'
   },
   community: {
-    'id': 'action_hash'
   },
   comment: {
-    'postId': 'base_action_hash'
+    'postId': 'base_action_hash',
+    'text': 'details'
   }
 }
 

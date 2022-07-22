@@ -9,9 +9,21 @@ export function Uint8ArrayStringToUint8Array (uint8ArrayString) {
 
 export const HyloHappInterface = {
   comments: {
-    create: createZomeCall('comments/create'),
-    all: () => [], // base_action_hash => createZomeCall('comments/all')(base_action_hash),
-    get: () => {} // address => createZomeCall('comments/get')(action_hash)
+    create: async ({ postId, text }) => {
+      const convertedData = {
+        base_action_hashes: [Uint8ArrayStringToUint8Array(postId)],
+        post: {
+          title: '',
+          details: text,
+          announcement: false,
+          post_type: 'Comment'
+        }
+      }
+
+      return createZomeCall('posts/create')(convertedData)
+    },
+    all: base_action_hash => createZomeCall('posts/all')(Uint8ArrayStringToUint8Array(base_action_hash)),
+    get: action_hash => createZomeCall('posts/get')(action_hash)
   },
 
   groups: {
@@ -44,7 +56,7 @@ export const HyloHappInterface = {
     create: async data => {
       const convertedData = {
         ...data,
-        to_base_action_hashes: data.to_base_action_hashes.map(Uint8ArrayStringToUint8Array)
+        base_action_hashes: data.base_action_hashes.map(Uint8ArrayStringToUint8Array)
       }
 
       return createZomeCall('posts/create')(convertedData)
@@ -52,7 +64,7 @@ export const HyloHappInterface = {
 
     // TODO: Remove underscores on unused pagination vars _from_time and _limit once DNA is ready
     // TODO: Change DNA to receive integer instead of string for limit
-    all: async (base_action_hash, { limit, since }) => {
+    all: async (base_action_hash, { limit, since } = {}) => {
       // const fromTime = since || currentDataTimeIso()
       // return createZomeCall('posts/all')({ base, from_time: fromTime, limit: Number(limit) })
       return createZomeCall('posts/all')(Uint8ArrayStringToUint8Array(base_action_hash))

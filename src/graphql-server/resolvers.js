@@ -1,4 +1,4 @@
-import { myPubKey } from 'client/holochain'
+/* eslint-disable camelcase */
 import HyloHappInterface from 'data-interfaces/HyloHappInterface'
 import { get, isEmpty } from 'lodash/fp'
 import {
@@ -14,7 +14,7 @@ export const resolvers = {
     },
 
     async createCommunity (_, { data: createCommunityData }) {
-      return dataMappedCall('community', createCommunityData, HyloHappInterface.groups.create)
+      // return dataMappedCall('community', createCommunityData, HyloHappInterface.groups.create)
     },
 
     async createPost (_, { data: createPostData }) {
@@ -22,20 +22,23 @@ export const resolvers = {
         announcement: false,
         details: createPostData.details,
         post_type: createPostData.type,
-        title: createPostData.title,
-        // This shouldn't be
-        author_pub_key: await myPubKey()
+        title: createPostData.title
       }
       const data = {
         post,
-        to_base_action_hashes: createPostData.postToGroupIds
+        base_action_hashes: createPostData.postToGroupIds
       }
 
       return dataMappedCall('post', data, HyloHappInterface.posts.create)
     },
 
     async createComment (_, { data: createCommentData }) {
-      return dataMappedCall('comment', createCommentData, HyloHappInterface.comments.create)
+      const data = {
+        text: createCommentData.text,
+        postId: createCommentData.postId
+      }
+
+      return dataMappedCall('post', data, HyloHappInterface.comments.create)
     },
 
     async findOrCreateMessageThread (_, { data: findOrCreateMessageThreadData }) {
@@ -105,6 +108,7 @@ export const resolvers = {
     },
 
     async post ({ postId: id }) {
+      console.log('!!!!! postId in Comment.post resolver:', id)
       return { id }
     }
   },
@@ -164,33 +168,32 @@ export const resolvers = {
     },
 
     async comments ({ id }, _, { HyloHappInterfaceLoaders }) {
-      // const zomeComments = await HyloHappInterfaceLoaders.comments.load(id)
+      const zomeComments = await HyloHappInterfaceLoaders.comments.load(id)
 
-      return toUiQuerySet('comment', [])
+      return toUiQuerySet('comment', zomeComments)
     },
 
     async commenters ({ id }, _, { HyloHappInterfaceLoaders }) {
-      return []
-      // const comments = await HyloHappInterfaceLoaders.comments.load(id)
-      // const commenterAddresses = []
-      // const commenters = await Promise.all(comments.map(({ creator }) => {
-      //   if (commenterAddresses.includes(creator)) return null
-      //   commenterAddresses.push(creator)
+      const zomeComments = await HyloHappInterfaceLoaders.comments.load(id)
+      const commenterActionHashes = []
+      const commenters = await Promise.all(zomeComments.map(({ author_pub_key }) => {
+        if (commenterActionHashes.includes(author_pub_key.toString())) return null
 
-      //   return HyloHappInterfaceLoaders.person.load(creator)
-      // }))
+        commenterActionHashes.push(author_pub_key.toString())
 
-      // return commenters
-      //   .filter(commenter => !!commenter)
-      //   .map(commenter => toUiData('person', commenter))
+        return HyloHappInterfaceLoaders.person.load(author_pub_key)
+      }))
+
+      return commenters
+        .filter(commenter => !!commenter)
+        .map(commenter => toUiData('person', commenter))
     },
 
     async commentersTotal ({ id }, _, { HyloHappInterfaceLoaders }) {
-      return 0
-      // const comments = await HyloHappInterfaceLoaders.comments.load(id)
-      // const commenterAddresses = comments.map(comment => comment.creator)
+      const comments = await HyloHappInterfaceLoaders.comments.load(id)
+      const commenterAgentPubKeys = comments.map(comment => comment.agent_pub_key)
 
-      // return new Set(commenterAddresses).size
+      return new Set(commenterAgentPubKeys).size
     }
   }
 }

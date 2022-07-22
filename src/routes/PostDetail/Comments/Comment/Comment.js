@@ -8,7 +8,7 @@ import Icon from 'components/Icon'
 import ClickCatcher from 'components/ClickCatcher'
 import HyloEditor from 'components/HyloEditor'
 import { personUrl } from 'util/navigation'
-import { humanDate, present, sanitize } from 'hylo-utils/text'
+import { humanDate } from 'hylo-utils/text'
 import { filter, isFunction } from 'lodash'
 import './Comment.scss'
 
@@ -45,7 +45,7 @@ export default class Comment extends Component {
       { icon: 'Trash', label: 'Remove', onClick: removeComment }
     ], item => isFunction(item.onClick))
 
-    const presentedText = present(sanitize(text), { slug })
+    const presentedText = text // present(sanitize(text), { slug })
 
     return <div styleName='comment'>
       <div styleName='header'>

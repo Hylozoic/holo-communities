@@ -6,6 +6,10 @@ export const HyloHappInterfaceLoaders = () => ({
     return Promise.all(ids.map(id => HyloHappInterface.comments.all(id)))
   }),
 
+  posts: new DataLoader(async ids => {
+    return Promise.all(ids.map(id => HyloHappInterface.posts.all(id)))
+  }),
+
   person: new DataLoader(async ids => {
     return Promise.all(ids.map(id => HyloHappInterface.people.get(id)))
   })

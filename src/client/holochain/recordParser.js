@@ -8,8 +8,14 @@ import { decode } from '@msgpack/msgpack'
 
 export function decodedEntryFromRecord (record) {
   // console.log('!!!! zome response (record - raw):', record)
+  // console.log('!!!! zome response (entry - decoded):', entry)
+  // signed_action.hashed.hash.toString()
 
   const entry = decode(get('entry.Present.entry', record))
+
+  entry.author_pub_key = record.signed_action.hashed.content.author
+  // entry.timestamp = new Date()
+  // record.signed_action.hashed.content.timestamp
 
   if (entry.agent_pub_key) {
     entry.agent_pub_key = entry.agent_pub_key.toString()
@@ -18,9 +24,6 @@ export function decodedEntryFromRecord (record) {
   if (get('signed_action.hashed.hash', record)) {
     entry.action_hash = record.signed_action.hashed.hash.toString()
   }
-
-  // console.log('!!!! zome response (entry - decoded):', entry)
-  // signed_action.hashed.hash.toString()
 
   return entry
 }

@@ -108,7 +108,6 @@ export const resolvers = {
     },
 
     async post ({ postId: id }) {
-      console.log('!!!!! postId in Comment.post resolver:', id)
       return { id }
     }
   },

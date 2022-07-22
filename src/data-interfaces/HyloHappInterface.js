@@ -67,7 +67,7 @@ export const HyloHappInterface = {
     all: async (base_action_hash, { limit, since } = {}) => {
       // const fromTime = since || currentDataTimeIso()
       // return createZomeCall('posts/all')({ base, from_time: fromTime, limit: Number(limit) })
-      return createZomeCall('posts/all')(Uint8ArrayStringToUint8Array(base_action_hash))
+      return (await createZomeCall('posts/all')(Uint8ArrayStringToUint8Array(base_action_hash))).reverse()
     },
 
     get: async action_hash => createZomeCall('posts/get')(Uint8ArrayStringToUint8Array(action_hash))

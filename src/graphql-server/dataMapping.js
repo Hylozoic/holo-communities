@@ -18,15 +18,14 @@ export const toInterfaceKeyMap = {
     'avatarUrl': 'avatar_url',
     'createdAt': 'timestamp',
     'creator': 'author_pub_key',
-    'id': 'action_hash',
     'lastReadTime': 'last_read_time',
     'messageThreadId': 'thread_action_hash',
     'participantIds': 'participant_action_hashes'
   },
   post: {
     'postToGroupIds': 'to_base_action_hashes',
-    'type': 'post_type',
-    'creator': 'author_pub_key'
+    'id': 'action_hash',
+    'type': 'post_type'
   },
   person: {
     'id': 'agent_pub_key'
@@ -40,6 +39,7 @@ export const toInterfaceKeyMap = {
 }
 
 export const toUiKeyMap = {}
+
 for (let key in toInterfaceKeyMap) {
   toUiKeyMap[key] = invert(toInterfaceKeyMap[key])
 }
@@ -49,7 +49,7 @@ export const createDataRemapper = initialDataMap => (type, data) => {
   const dataMapForType = type in initialDataMap
     ? initialDataMap[type]
     : {}
-  const dataMap = Object.assign({}, initialDataMap['global'], dataMapForType)
+  const dataMap = Object.assign({}, dataMapForType, initialDataMap['global'])
   let remappedData = {}
 
   for (let key in data) {
@@ -87,9 +87,9 @@ export const toUiData = (...args) => {
   }
 }
 
-export const toUiQuerySet = (items, { hasMore = false } = {}) => ({
+export const toUiQuerySet = (entityType, items, { hasMore = false } = {}) => ({
   total: items.length,
-  items,
+  items: items.map(item => toUiData(entityType, item)),
   hasMore
 })
 

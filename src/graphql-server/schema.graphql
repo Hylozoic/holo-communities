@@ -3,7 +3,6 @@ type Me {
   id: ID
   name: String
   avatarUrl: String
-  isRegistered: Boolean
   messageThreads(first: Int, offset: Int, order: String, sortBy: String): MessageThreadQuerySet
   memberships(first: Int, cursor: ID, order: String): [Membership]
   membershipsTotal: Int

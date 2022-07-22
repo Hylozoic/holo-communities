@@ -1,7 +1,6 @@
 import { myPubKey } from 'client/holochain'
 import HyloHappInterface from 'data-interfaces/HyloHappInterface'
-import { isEmpty } from 'lodash/fp'
-import { getRandomUuid } from 'util/holochain'
+import { get, isEmpty } from 'lodash/fp'
 import {
   toUiData,
   toUiQuerySet,
@@ -24,6 +23,7 @@ export const resolvers = {
         details: createPostData.details,
         post_type: createPostData.type,
         title: createPostData.title,
+        // This shouldn't be
         author_pub_key: await myPubKey()
       }
       const data = {
@@ -57,7 +57,6 @@ export const resolvers = {
     },
 
     async communityExists (_, { slug }) {
-      console.log('!!! here', slug)
       return { communityExists: false }
     },
 
@@ -72,16 +71,15 @@ export const resolvers = {
     },
 
     async post (_, data) {
-      console.log('!!!!! data in post query resolver:', data)
+      // 'new' due to routing issue currently, remove shortly
+      if (isEmpty(get('id', data)) || get('id', data) === 'new') return null
       return toUiData('post', await HyloHappInterface.posts.get(data.id))
     },
 
     async people () {
       const people = await HyloHappInterface.people.all()
 
-      return toUiQuerySet(people.map(person =>
-        toUiData('person', person)
-      ))
+      return toUiQuerySet('person', people)
     },
 
     async person (_, { id }) {
@@ -114,12 +112,8 @@ export const resolvers = {
   Community: {
     async posts ({ id }, { limit, since }) {
       const postsQueryset = await HyloHappInterface.posts.all(id, { limit, since })
-      console.log('!!! Community posts query set', postsQueryset)
-      return toUiQuerySet(
-        postsQueryset.map(post => toUiData('post', post)),
-        { hasMore: false }
-        // { hasMore: postsQueryset.more }
-      )
+
+      return toUiQuerySet('post', postsQueryset)
     }
   },
 
@@ -130,10 +124,7 @@ export const resolvers = {
       // TODO: Remove once `HyloHappInterface.groups.all()` is behaving
       if (isEmpty(communities)) return []
 
-      return communities.map(community => ({
-        id: getRandomUuid(),
-        community: toUiData('community', community)
-      }))
+      return communities.map(community => toUiData('community', community))
     }
   },
 
@@ -162,44 +153,44 @@ export const resolvers = {
   },
 
   Post: {
-    async communities ({ communityId }) {
-      return [
-        toUiData('community', await HyloHappInterface.groups.get(communityId))
-      ]
-    },
+    // async communities (params) {
+    //   return [
+    //     toUiData('community', await HyloHappInterface.groups.get(params.communityId))
+    //   ]
+    // },
 
     async creator ({ creator }, _, { HyloHappInterfaceLoaders }) {
       return toUiData('person', await HyloHappInterfaceLoaders.person.load(creator))
     },
 
     async comments ({ id }, _, { HyloHappInterfaceLoaders }) {
-      const zomeComments = await HyloHappInterfaceLoaders.comments.load(id)
+      // const zomeComments = await HyloHappInterfaceLoaders.comments.load(id)
 
-      return toUiQuerySet(zomeComments.map(comment =>
-        toUiData('comment', comment)
-      ))
+      return toUiQuerySet('comment', [])
     },
 
     async commenters ({ id }, _, { HyloHappInterfaceLoaders }) {
-      const comments = await HyloHappInterfaceLoaders.comments.load(id)
-      const commenterAddresses = []
-      const commenters = await Promise.all(comments.map(({ creator }) => {
-        if (commenterAddresses.includes(creator)) return null
-        commenterAddresses.push(creator)
+      return []
+      // const comments = await HyloHappInterfaceLoaders.comments.load(id)
+      // const commenterAddresses = []
+      // const commenters = await Promise.all(comments.map(({ creator }) => {
+      //   if (commenterAddresses.includes(creator)) return null
+      //   commenterAddresses.push(creator)
 
-        return HyloHappInterfaceLoaders.person.load(creator)
-      }))
+      //   return HyloHappInterfaceLoaders.person.load(creator)
+      // }))
 
-      return commenters
-        .filter(commenter => !!commenter)
-        .map(commenter => toUiData('person', commenter))
+      // return commenters
+      //   .filter(commenter => !!commenter)
+      //   .map(commenter => toUiData('person', commenter))
     },
 
     async commentersTotal ({ id }, _, { HyloHappInterfaceLoaders }) {
-      const comments = await HyloHappInterfaceLoaders.comments.load(id)
-      const commenterAddresses = comments.map(comment => comment.creator)
+      return 0
+      // const comments = await HyloHappInterfaceLoaders.comments.load(id)
+      // const commenterAddresses = comments.map(comment => comment.creator)
 
-      return new Set(commenterAddresses).size
+      // return new Set(commenterAddresses).size
     }
   }
 }

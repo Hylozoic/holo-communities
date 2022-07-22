@@ -41,14 +41,13 @@ export const HyloHappInterface = {
   },
 
   posts: {
-    create: data => {
-      console.log('!!! data in HyloHappInterface.posts.create', data)
+    create: async data => {
       const convertedData = {
         ...data,
         to_base_action_hashes: data.to_base_action_hashes.map(Uint8ArrayStringToUint8Array)
       }
 
-      createZomeCall('posts/create')(convertedData)
+      return createZomeCall('posts/create')(convertedData)
     },
 
     // TODO: Remove underscores on unused pagination vars _from_time and _limit once DNA is ready
@@ -59,7 +58,7 @@ export const HyloHappInterface = {
       return createZomeCall('posts/all')(Uint8ArrayStringToUint8Array(base_action_hash))
     },
 
-    get: action_hash => createZomeCall('posts/get')(Uint8ArrayStringToUint8Array(action_hash))
+    get: async action_hash => createZomeCall('posts/get')(Uint8ArrayStringToUint8Array(action_hash))
   }
 }
 

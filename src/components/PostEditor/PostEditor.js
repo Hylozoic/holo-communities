@@ -295,23 +295,46 @@ export default class PostEditor extends React.Component {
     )
   }
 
-  save = () => {
+  save = async () => {
     const {
       editing, createPost, createProject, updatePost, onClose, goToPost, setAnnouncement, announcementSelected, isProject
     } = this.props
     const {
-      id, type, title, communities, linkPreview, members, acceptContributions, eventInvitations, startTime, endTime, location
+      id, type, title, communities, linkPreview, acceptContributions, eventInvitations, startTime, endTime, location
     } = this.state.post
     const details = this.editor.current.getContentHTML()
-    const topicNames = get('current', this.topicSelector) && this.topicSelector.current.getSelected().map(t => t.name)
-    const memberIds = members && members.map(m => m.id)
+    // const topicNames = get('current', this.topicSelector) && this.topicSelector.current.getSelected().map(t => t.name)
+    // const memberIds = members && members.map(m => m.id)
     const eventInviteeIds = eventInvitations && eventInvitations.map(m => m.id)
     const postToSave = {
-      id, type, title, details, communities, linkPreview, topicNames, sendAnnouncement: announcementSelected, memberIds, acceptContributions, eventInviteeIds, startTime, endTime, location
+      id,
+      type,
+      title,
+      details,
+      communities,
+      linkPreview,
+      // topicNames,
+      sendAnnouncement: announcementSelected,
+      // memberIds,
+      acceptContributions,
+      eventInviteeIds,
+      startTime,
+      endTime,
+      location
     }
     const saveFunc = editing ? updatePost : isProject ? createProject : createPost
+
     setAnnouncement(false)
-    saveFunc(postToSave).then(editing ? onClose : goToPost)
+
+    try {
+      const result = await saveFunc(postToSave)
+      goToPost(result.id)
+      // editing
+      //   ? onClose()
+      //   : goToPost()
+    } catch (err) {
+      onClose()
+    }
   }
 
   buttonLabel = () => {

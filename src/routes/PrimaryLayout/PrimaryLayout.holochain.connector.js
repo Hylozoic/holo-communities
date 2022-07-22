@@ -23,8 +23,7 @@ export function mapStateToProps (state, props) {
     isDrawerOpen: get('PrimaryLayout.isDrawerOpen', state),
     showLogoBadge: false,
     // not used by holochain
-    fetchForCommunity: () => {},
-    fetchForCurrentUser: () => {}
+    fetchForCommunity: () => {}
   }
 }
 
@@ -54,12 +53,12 @@ const community = graphql(HolochainCommunityQuery, {
 
 const currentUserFromHolochainAgent = graphql(HolochainCurrentUserQuery, {
   skip: props => props.currentUser,
-  props: ({ data: { me: holochainAgent, loading }, ownProps: { fetchForCurrentUserMock } }) => {
+  props: ({ data: { me: holochainAgent, loading } }) => {
     if (loading) return
-    // * Merges Holochain Agent data into the Redux ORM CurrentUser mock
-    fetchForCurrentUserMock(holochainAgent)
+
     return {
-      holochainAgent
+      holochainAgent,
+      loading
     }
   }
 })

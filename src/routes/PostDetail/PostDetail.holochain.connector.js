@@ -13,8 +13,6 @@ export function mapStateToProps (state, props) {
   const routeParams = props.match.params
   const currentUser = getMe(state)
 
-  console.log('!!!! postdetails connector', props)
-
   return {
     id,
     routeParams,

@@ -43,7 +43,6 @@ export function unreadCount ({ messages: { items: messages }, lastReadTime: last
   messages.forEach(message => {
     if (new Date(message.createdAt) > lastReadTime) {
       count += 1
-      console.log('!!! new message', count)
     }
   })
 

@@ -53,8 +53,8 @@ import { CENTER_COLUMN_ID, DETAIL_COLUMN_ID } from 'util/scrolling'
 import './PrimaryLayout.scss'
 
 export default function PrimaryLayout ({
-  fetchForCurrentUser,
   fetchForCommunity,
+  fetchForCurrentUserMock,
   slug,
   community,
   network,
@@ -65,14 +65,16 @@ export default function PrimaryLayout ({
   isCommunityRoute,
   communityPending,
   showLogoBadge,
-  goBack
+  goBack,
+  holochainAgent,
+  loading
 }) {
   const smallScreen = isSmallScreen()
   const mediumScreen = isMediumScreen()
 
   useEffect(() => {
-    (async () => { await fetchForCurrentUser() })()
-  }, [])
+    (async () => { !loading && await fetchForCurrentUserMock(holochainAgent) })()
+  }, [loading])
 
   useEffect(() => {
     (async () => { slug && await fetchForCommunity() })()

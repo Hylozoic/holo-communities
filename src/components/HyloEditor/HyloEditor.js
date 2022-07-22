@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import Editor from 'draft-js-plugins-editor'
-import createMentionPlugin from 'draft-js-mention-plugin'
-import createLinkifyPlugin from 'draft-js-linkify-plugin'
+import Editor from '@draft-js-plugins/editor'
+import createMentionPlugin from '@draft-js-plugins/mention'
+import createLinkifyPlugin from '@draft-js-plugins/linkify'
 import { EditorState, ContentState, convertToRaw } from 'draft-js'
 import cx from 'classnames'
 import contentStateToHTML from './contentStateToHTML'
@@ -201,12 +201,16 @@ export default class HyloEditor extends Component {
         onSearchChange={this.handleMentionsSearch}
         suggestions={mentionResults}
         onOpen={this.disableSubmitOnReturn}
-        onClose={this.handleMentionsClose} />
+        onClose={this.handleMentionsClose}
+        onOpenChange={() => {}}
+        open={false} />
       <TopicSuggestions
         onSearchChange={this.handleTopicSearch}
         suggestions={topicSuggestions}
         onOpen={this.disableSubmitOnReturn}
-        onClose={this.handleTopicsClose} />
+        onClose={this.handleTopicsClose}
+        onOpenChange={() => {}}
+        open={false} />
     </div>
   }
 }

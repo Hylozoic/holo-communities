@@ -74,8 +74,6 @@ export default class Feed extends Component {
     } = this.props
     const { networkSlug, topicName } = routeParams
 
-    console.log('!!!!! in feed component', routeParams)
-
     if (topicName && !topic) return <Loading />
     if (community && topicName && !communityTopic) return <Loading />
     if (!currentUser || !community) return <Loading />

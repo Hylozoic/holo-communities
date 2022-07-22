@@ -1,6 +1,11 @@
 import { get, isArray } from 'lodash/fp'
 import { decode } from '@msgpack/msgpack'
 
+// TIMESTAMP
+// record.signed_action.hashed.content.timestamp (FORMAT: 1658438688413920)
+// AUTHOR (AGENT_PUB_KEY)
+// record.signed_action.hashed.content.author
+
 export function decodedEntryFromRecord (record) {
   // console.log('!!!! zome response (record - raw):', record)
 

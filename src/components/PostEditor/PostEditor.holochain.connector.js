@@ -65,7 +65,6 @@ export const currentCommunity = graphql(HolochainCommunityQuery, {
 export const createPost = graphql(HolochainCreatePostMutation, {
   props: ({ mutate, ownProps }) => ({
     createPost: post => {
-      console.log('!!! post in createPost mutation Apollo:', post)
       return mutate({
         variables: {
           ...pick([
@@ -74,7 +73,7 @@ export const createPost = graphql(HolochainCreatePostMutation, {
             'details'
           ], post),
           postToGroupIds: post.communities.map(c => c.id)
-        },
+        }
         // NOTE: Replaced this with update below
         // refetchQueries: [{
         //   query: HolochainCommunityQuery,
@@ -82,24 +81,26 @@ export const createPost = graphql(HolochainCreatePostMutation, {
         //     slug: getRouteParam('slug', {}, ownProps)
         //   }
         // }],
-        update: (proxy, { data: { createPost } }) => {
-          const slug = getRouteParam('slug', {}, ownProps)
-          const post = { ...createPost, __typename: 'Post' }
-          const data = proxy.readQuery({
-            query: HolochainCommunityQuery,
-            variables: {
-              slug,
-              withPosts: true
-            }
-          })
-          data.community.posts.items.unshift(post)
-          proxy.writeData({ data })
-        }
+        // update: (proxy, { data: { createPost } }) => {
+        //   const post = { ...createPost, __typename: 'Post' }
+        //   createPost.communities.forEach(community => {
+        //     const data = proxy.readQuery({
+        //       query: HolochainCommunityQuery,
+        //       variables: {
+        //         slug: community.slug,
+        //         withPosts: true
+        //       }
+        //     })
+        //     data.community.posts.items.unshift(post)
+        //     proxy.writeData({ data })
+        //   })
+        // }
       })
     },
     // postPending: TBD
     goToPost: props => {
       const { slug, postTypeContext } = ownProps.routeParams
+
       return ownProps.goToUrl(postUrl(props.data.createPost.id, { slug, postTypeContext }))
     }
   })

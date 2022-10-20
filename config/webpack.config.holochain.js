@@ -3,5 +3,6 @@ const paths = require('./paths')
 
 // Holochain specifics for build
 prodConfig.output.path = process.env['HOLOCHAIN_BUILD_PATH'] || paths.hcBuild
+prodConfig.devtool = false
 
 module.exports = prodConfig
